@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishbook</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4267B2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .hidden {
+            display: none;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="comment"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #4267B2;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #365899;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .profile img {
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            margin-right: 10px;
+        }
+        .description {
+            margin: 10px 0;
+        }
+        .shared-post {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-radius: 4px;
+        }
+        .shared-post-actions {
+            margin-top: 10px;
+        }
+        .comment-section {
+            margin-top: 10px;
+        }
+        .comment {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fishbook</h1>
+    </header>
+    <div class="container">
+        <div id="register" class="form-group">
+            <h2>Register</h2>
+            <input type="text" id="regName" placeholder="Name" required>
+            <input type="text" id="regUsername" placeholder="Username" required>
+            <input type="password" id="regPassword" placeholder="Password" required>
+            <button onclick="register()">Register</button>
+        </div>
+        
+        <div id="login" class="form-group hidden">
+            <h2>Login</h2>
+            <input type="text" id="loginUsername" placeholder="Username" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="home" class="hidden">
+            <h2>Home</h2>
+            <div class="profile">
+                <img id="profilePic" src="LT2.jpg" alt="Profile Picture"> <!-- Set to LT2.jpg -->
+                <h3 id="profileName"></h3>
+            </div>
+            <div class="description">
+                <h4>About My Cat</h4>
+                <p>This is my adorable cat! She loves to play and nap in the sun. A true bundle of joy!</p>
+            </div>
+            <div class="shared-post">
+                <h4>Shared Post</h4>
+                <p>Just adopted a new cat! Can't wait to share more adventures with her!</p>
+                <img src="LT.jpg" alt="Cat Picture" style="width: 100%; border-radius: 4px;"> <!-- Replace with your image URL -->
+                <div class="shared-post-actions">
+                    <button onclick="likePost()">Like</button>
+                    <button onclick="showCommentSection()">Comment</button>
+                    <button onclick="sharePost()">Share</button>
+                </div>
+                <div id="commentSection" class="comment-section hidden">
+                    <input type="text" id="commentInput" placeholder="Add a comment">
+                    <button onclick="addComment()">Post Comment</button>
+                    <div id="comments" class="comments"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile" class="hidden">
+            <h2>Profile</h2>
+            <div class="profile">
+                <img id="profilePic" src="LT2.jpg" alt="Profile Picture"> <!-- Set to LT2.jpg -->
+                <div id="profileInfo">
+                    <h3 id="profileName"></h3>
+                </div>
+            </div>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+        let currentUser = null;
+        let postLikes = 0;
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+
+            const user = { name, username, password, friends: [] };
+            users.push(user);
+
+            alert('Registration successful!');
+            document.getElementById('register').classList.add('hidden');
+            document.getElementById('login').classList.remove('hidden');
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                alert('Login successful!');
+                loadHome();
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        function loadHome() {
+            document.getElementById('login').classList.add('hidden');
+            document.getElementById('home').classList.remove('hidden');
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profilePic').src = "LT2.jpg"; // Set to LT2.jpg
+        }
+
+        function likePost() {
+            postLikes++;
+            alert(`Post liked! Total likes: ${postLikes}`);
+        }
+
+        function showCommentSection() {
+            document.getElementById('commentSection').classList.toggle('hidden');
+        }
+
+        function addComment() {
+            const comment = document.getElementById('commentInput').value;
+            if (comment) {
+                const commentDiv = document.createElement('div');
+                commentDiv.classList.add('comment');
+                commentDiv.innerText = `${currentUser.name}: ${comment}`;
+                document.getElementById('comments').appendChild(commentDiv);
+                document.getElementById('commentInput').value = ''; // Clear the input
+            }
+        }
+
+        function sharePost() {
+            alert('Post shared!');
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('home').classList.add('hidden');
+            document.getElementById('login').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
